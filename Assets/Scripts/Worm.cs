@@ -6,6 +6,7 @@ public class Worm : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D _bulletPrefab;
     [SerializeField] private Transform _currGun;
+    [SerializeField] private WormHealth _wormHealth;
 
     public float walkSpeed = 1f;
     public float maxRelativeVelocity = 6f;
@@ -29,8 +30,8 @@ public class Worm : MonoBehaviour
     }
     void Update()
     {
-        //if (!IsTurn)
-        //    return;
+        if (!IsTurn)
+            return;
 
         RotateGun();
         MovementAndShooting();
@@ -71,6 +72,16 @@ public class Worm : MonoBehaviour
             transform.position += Vector3.right * hor * Time.deltaTime * walkSpeed;
             _spriteRenderer.flipX = Input.GetAxis("Horizontal") > 0;
         }
-        
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("bullet"))
+        {
+            _wormHealth.ChangeHealth(-10);
+
+            if (IsTurn)
+                WormManager.Instance.NextWorm();
+        }
     }
 }

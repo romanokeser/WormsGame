@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Worm : MonoBehaviour
 {
+
     [SerializeField] private Rigidbody2D _bulletPrefab;
     [SerializeField] private Transform _currGun;
     [SerializeField] private WormHealth _wormHealth;
@@ -17,16 +18,21 @@ public class Worm : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private Camera _maincam;
 
+    public Vector2 _jumpHeight;
 
     public bool IsTurn { get { return WormManager.Instance.IsMyTurn(wormID); } }
 
     private Vector3 diff;
 
+    public bool _isGrounded;
 
     void Start()
     {
+
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _maincam = Camera.main;
+
+        _isGrounded = true;
     }
     void Update()
     {
@@ -35,6 +41,17 @@ public class Worm : MonoBehaviour
 
         RotateGun();
         MovementAndShooting();
+        Jump();
+    }
+
+    private void Jump()
+    {
+        if (Input.GetButtonDown("Jump") && _isGrounded)
+        {
+            GetComponent<Rigidbody2D>().AddForce(_jumpHeight, ForceMode2D.Impulse);
+
+            _isGrounded = false;
+        }
     }
 
     private void RotateGun()
@@ -48,17 +65,21 @@ public class Worm : MonoBehaviour
 
     private void MovementAndShooting()
     {
-        float hor = Input.GetAxis("Horizontal");
+        float horizMovement = Input.GetAxis("Horizontal");
 
-        if (hor == 0)
+        if (horizMovement == 0)
         {
-            _currGun.gameObject.SetActive(true);
-            if (Input.GetKey(KeyCode.Space))
+            EnableGun(true);
+            if (Input.GetKey(KeyCode.Mouse0))
             {
+                TimerController.Instance.ResetTime();
+                EnableGun(false);
+
                 Rigidbody2D bullet = Instantiate(_bulletPrefab,
                     _currGun.position - _currGun.right,
                     _currGun.rotation);
                 bullet.AddForce(-_currGun.right * misileForce, ForceMode2D.Impulse);
+                DestroyObjectDelayed(bullet.gameObject);
 
                 if (IsTurn)
                 {
@@ -68,10 +89,20 @@ public class Worm : MonoBehaviour
         }
         else
         {
-            _currGun.gameObject.SetActive(false);
-            transform.position += Vector3.right * hor * Time.deltaTime * walkSpeed;
+            EnableGun(false);
+            transform.position += Vector3.right * horizMovement * Time.deltaTime * walkSpeed;
             _spriteRenderer.flipX = Input.GetAxis("Horizontal") > 0;
         }
+    }
+
+    void DestroyObjectDelayed(GameObject thisGO)
+    {
+        Destroy(thisGO, 5);
+    }
+
+    private void EnableGun(bool enable)
+    {
+        _currGun.gameObject.SetActive(enable);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -82,6 +113,14 @@ public class Worm : MonoBehaviour
 
             if (IsTurn)
                 WormManager.Instance.NextWorm();
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.tag == "Ground" && _isGrounded == false)
+        {
+            _isGrounded = true;
         }
     }
 }

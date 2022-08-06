@@ -702,7 +702,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!95 &144760317
 Animator:
   serializedVersion: 3
@@ -1403,7 +1403,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &420483084
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1815,7 +1815,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d0f8b1eab6c9bd40944622d94b30756, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseTexture: {fileID: 2800000, guid: 2e20f8060b560254580728b5f3039d4e, type: 3}
+  baseTexture: {fileID: 2800000, guid: 001ad0c8f26f94c499ba1c04686eccfa, type: 3}
 --- !u!212 &637960472
 SpriteRenderer:
   m_ObjectHideFlags: 0

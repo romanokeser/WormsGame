@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class Ground : MonoBehaviour
 {
-    public Texture2D baseTexture;
-    Texture2D cloneTexture;
-    SpriteRenderer sr;
+    [SerializeField] private Texture2D baseTexture;
+    private Texture2D _cloneTexture;
+    private SpriteRenderer _sr;
 
-    float widthWorld, heightWorld;
-    int widthPixel, heightPixel;
+    private float _widthWorld, _heightWorld;
+    private int _widthPixel, _heightPixel;
 
     public float WidthWorld
     {
         get
         {
-            if (widthWorld == 0)
-                widthWorld = sr.bounds.size.x;
-            return widthWorld;
+            if (_widthWorld == 0)
+                _widthWorld = _sr.bounds.size.x;
+            return _widthWorld;
         }
 
     }
@@ -25,9 +25,9 @@ public class Ground : MonoBehaviour
     {
         get
         {
-            if (heightWorld == 0)
-                heightWorld = sr.bounds.size.y;
-            return heightWorld;
+            if (_heightWorld == 0)
+                _heightWorld = _sr.bounds.size.y;
+            return _heightWorld;
         }
 
     }
@@ -35,20 +35,20 @@ public class Ground : MonoBehaviour
     {
         get
         {
-            if (widthPixel == 0)
-                widthPixel = sr.sprite.texture.width;
+            if (_widthPixel == 0)
+                _widthPixel = _sr.sprite.texture.width;
 
-            return widthPixel;
+            return _widthPixel;
         }
     }
     public int HeightPixel
     {
         get
         {
-            if (heightPixel == 0)
-                heightPixel = sr.sprite.texture.height;
+            if (_heightPixel == 0)
+                _heightPixel = _sr.sprite.texture.height;
 
-            return heightPixel;
+            return _heightPixel;
         }
     }
 
@@ -56,13 +56,13 @@ public class Ground : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        sr = GetComponent<SpriteRenderer>();
-        cloneTexture = Instantiate(baseTexture);
-        cloneTexture.alphaIsTransparency = true;
+        _sr = GetComponent<SpriteRenderer>();
+        _cloneTexture = Instantiate(baseTexture);
+        _cloneTexture.alphaIsTransparency = true;
 
-        if (cloneTexture.format != TextureFormat.ARGB32)
+        if (_cloneTexture.format != TextureFormat.ARGB32)
             Debug.LogWarning("Texture must be ARGB32");
-        if (cloneTexture.wrapMode != TextureWrapMode.Clamp)
+        if (_cloneTexture.wrapMode != TextureWrapMode.Clamp)
             Debug.LogWarning("wrapMode must be Clamp");
 
         UpdateTexture();
@@ -72,7 +72,7 @@ public class Ground : MonoBehaviour
 
     void MakeAHole(CircleCollider2D col)
     {
-        print(string.Format("{0},{1},{2},{3}", WidthPixel, HeightPixel, WidthWorld, heightWorld));
+        print(string.Format("{0},{1},{2},{3}", WidthPixel, HeightPixel, WidthWorld, _heightWorld));
 
         Vector2Int c = World2Pixel(col.bounds.center);
         int r = Mathf.RoundToInt(col.bounds.size.x * WidthPixel / WidthWorld);
@@ -88,13 +88,13 @@ public class Ground : MonoBehaviour
                 py = c.y + j;
                 ny = c.y - j;
 
-                cloneTexture.SetPixel(px, py, Color.clear);
-                cloneTexture.SetPixel(nx, py, Color.clear);
-                cloneTexture.SetPixel(px, ny, Color.clear);
-                cloneTexture.SetPixel(nx, ny, Color.clear);
+                _cloneTexture.SetPixel(px, py, Color.clear);
+                _cloneTexture.SetPixel(nx, py, Color.clear);
+                _cloneTexture.SetPixel(px, ny, Color.clear);
+                _cloneTexture.SetPixel(nx, ny, Color.clear);
             }
         }
-        cloneTexture.Apply();
+        _cloneTexture.Apply();
         UpdateTexture();
 
         Destroy(gameObject.GetComponent<PolygonCollider2D>());
@@ -103,8 +103,8 @@ public class Ground : MonoBehaviour
 
     void UpdateTexture()
     {
-        sr.sprite = Sprite.Create(cloneTexture,
-                            new Rect(0, 0, cloneTexture.width, cloneTexture.height),
+        _sr.sprite = Sprite.Create(_cloneTexture,
+                            new Rect(0, 0, _cloneTexture.width, _cloneTexture.height),
                             new Vector2(0.5f, 0.5f),
                             50f
                             );
